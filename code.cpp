@@ -17,12 +17,16 @@ map<string, int> registers = {
 map<string, int> instr_num = {
 	{"add", 0}, {"sub", 0}, {"mul", 0}, {"beq", 0}, {"bne", 0}, {"slt", 0}, {"j", 0}, {"lw", 0}, {"sw", 0}, {"addi", 0}
 };
-int n = (int)(pow(2.0, 9.0));
+int n = (int)(pow(2.0, 10.0));
 vector<vector<string>> instructions; // For storing instructions
 vector<vector<int>> dram_memory(n,vector<int>(n, 0));
 vector<string> line_inst;
 map<string, int> jump_check; //For storing the instruction number in case of jump
+vector<int> row_buffer;
 int total_inst = 0, counter = 0, inst_count = 0, cycles_clock = 0;
+int row_number = -1;
+int row_access_delay;
+int column_access_delay;
 
 //Integer is 2^5 bits, total memory available is 2^23 bits 
 //so total size of array to be created for memory is 2^18=262144.
@@ -221,6 +225,39 @@ int main(int argc, char const* argv[])
 			if ((registers.find(base_address) == registers.end())) throw_error(counter);
 			int base_value = registers[base_address];
 			memory[base_value + stoi(offset_address) / 4] = registers[line_inst[1]];
+			int rw, clw;
+			rw = static_cast<int>(floor((base_value + stoi(offset_address)) / 1024));
+
+			if(row_number!= rw && row_number != -1){
+				//copy to dram and then copy another row and change
+				dram_memory[row_number] = row_buffer;
+				row_buffer = dram_memory[rw];
+				clw = (base_value + stoi(offset_address)) % 1024;
+				if (clw % 4 != 0) throw_error(counter);
+				row_buffer[clw] = registers[line_inst[1]];
+				row_number = rw;
+				row_access_delay = 2;
+				column_access_delay = 4;
+				cycles_clock += row_access_delay + column_access_delay;
+			}
+			else if (row_number == rw){
+				clw = (base_value + stoi(offset_address)) % 1024;
+				if (clw % 4 != 0) throw_error(counter);
+				row_buffer[clw] = registers[line_inst[1]];
+				row_access_delay = 0;
+				column_access_delay = 4;
+				cycles_clock += row_access_delay + column_access_delay;
+			}
+			else{
+				row_buffer = dram_memory[rw];
+				clw = (base_value + stoi(offset_address)) % 1024;
+				if (clw % 4 != 0) throw_error(counter);
+				row_buffer[clw] = registers[line_inst[1]];
+				row_number = rw;
+				row_access_delay = 1;
+				column_access_delay = 4;
+				cycles_clock += row_access_delay + column_access_delay;
+			}
 			cycles_clock++;
 			print_reg(cycles_clock);
 		}
