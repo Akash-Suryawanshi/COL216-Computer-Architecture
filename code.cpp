@@ -1,4 +1,3 @@
-//#include <bits/stdc++.h>
 #include <sstream>
 #include <vector>
 #include <map>
@@ -79,26 +78,32 @@ int main(int argc, char const *argv[]){
 
 	total_inst = instructions.size();
 	vector<int > memory(262144-total_inst, 0);
+	int t = 0;
 	while(counter<total_inst){
-		cycles_clock++;
 		line_inst = instructions[counter];
 		if(line_inst[0] == "sub"){
 			if((line_inst.size()!=4) || (registers.find(line_inst[1]) == registers.end()) 
 				|| (registers.find(line_inst[2]) == registers.end()) || (registers.find(line_inst[3]) == registers.end())) throw_error(counter);
 			instr_num[line_inst[0]]++;
 			registers[line_inst[1]] = registers[line_inst[2]] - registers[line_inst[3]];
+			cycles_clock++;
+			print_reg(cycles_clock);
 		}
 		else if(line_inst[0] == "mul"){
 			if((line_inst.size()!=4) || (registers.find(line_inst[1]) == registers.end()) 
 				|| (registers.find(line_inst[2]) == registers.end()) || (registers.find(line_inst[3]) == registers.end())) throw_error(counter);
 			instr_num[line_inst[0]]++;
 			registers[line_inst[1]] = registers[line_inst[2]] * registers[line_inst[3]];
+			cycles_clock++;
+			print_reg(cycles_clock);
 		}
 		else if(line_inst[0] == "add"){
 			if((line_inst.size()!=4) || (registers.find(line_inst[1]) == registers.end()) 
 				|| (registers.find(line_inst[2]) == registers.end()) || (registers.find(line_inst[3]) == registers.end())) throw_error(counter);
 			instr_num[line_inst[0]]++;
 			registers[line_inst[1]] = registers[line_inst[2]] + registers[line_inst[3]];
+			cycles_clock++;
+			print_reg(cycles_clock);
 		}
 		else if(line_inst[0] == "slt"){
 			if((line_inst.size()!=4) || (registers.find(line_inst[1]) == registers.end()) 
@@ -107,6 +112,8 @@ int main(int argc, char const *argv[]){
 			int reg1 = registers[line_inst[2]], reg2 = registers[line_inst[3]];
 			if(reg1<reg2) registers[line_inst[1]] = 1;
 			else registers[line_inst[1]] = 0;
+			cycles_clock++;
+			print_reg(cycles_clock);
 		}
 		else if(line_inst[0] == "addi"){
 			if((line_inst.size()!=4) || (registers.find(line_inst[1]) == registers.end()) 
@@ -116,12 +123,16 @@ int main(int argc, char const *argv[]){
 			int reg1 = registers[line_inst[2]], reg2 = stoi(line_inst[3]);
 			if(line_inst[2] == "$sp") registers[line_inst[1]] = reg1 + reg2/4;
 			else registers[line_inst[1]] = reg1 + reg2;
+			cycles_clock++;
+			print_reg(cycles_clock);
 		}
 		else if(line_inst[0] == "j"){
 			if(line_inst.size()!=2) throw_error(counter);
 			instr_num[line_inst[0]]++;
-				if(jump_check.find(line_inst[1]) == jump_check.end()) throw_error(counter);
+			if(jump_check.find(line_inst[1]) == jump_check.end()) throw_error(counter);
 			counter = jump_check[line_inst[1]];
+			cycles_clock++;
+			print_reg(cycles_clock);
 		}
 		else if(line_inst[0] == "bne"){
 			if((line_inst.size()!=4) || (registers.find(line_inst[1]) == registers.end()) 
@@ -132,6 +143,8 @@ int main(int argc, char const *argv[]){
 			if(reg1!=reg2){
 				counter = jump_check[line_inst[3]];
 			}
+			cycles_clock++;
+			print_reg(cycles_clock);
 		}
 		else if(line_inst[0] == "beq"){	
 			if((line_inst.size()!=4) || (registers.find(line_inst[1]) == registers.end()) 
@@ -142,6 +155,8 @@ int main(int argc, char const *argv[]){
 			if(reg1==reg2){
 				counter = jump_check[line_inst[3]];
 			}
+			cycles_clock++;
+			print_reg(cycles_clock);
 		}
 		else if(line_inst[0] == "sw"){
 			if((line_inst.size()!=3) || (registers.find(line_inst[1]) == registers.end()) ) throw_error(counter);
@@ -161,6 +176,8 @@ int main(int argc, char const *argv[]){
 			if((registers.find(base_address) == registers.end()) ) throw_error(counter);
 			int base_value = registers[base_address];
 			memory[base_value + stoi(offset_address)/4] = registers[line_inst[1]];
+			cycles_clock++;
+			print_reg(cycles_clock);
 		}
 		else if(line_inst[0] == "lw"){
 			if((line_inst.size()!=3) || (registers.find(line_inst[1]) == registers.end()) ) throw_error(counter);
@@ -180,6 +197,8 @@ int main(int argc, char const *argv[]){
 			if((registers.find(base_address) == registers.end()) ) throw_error(counter);
 			int base_value = registers[base_address];
 			registers[line_inst[1]] = memory[base_value + stoi(offset_address)];
+			cycles_clock++;
+			print_reg(cycles_clock);
 		}
 		else if(line_inst.size()>1){
 			cout<<"Syntax Error at line number "<<counter+1<<endl;
@@ -187,13 +206,11 @@ int main(int argc, char const *argv[]){
 			exit(0);
 		}
 		counter++;
-		print_reg(cycles_clock);
 	}
 	cout<<"Number of Clock Cycles: "<<cycles_clock<<endl;
 	for(auto i: instr_num){
-		cout<<"{"<<i.first<<": "<<i.second<<"} ";
+		cout<<"{"<<i.first<<": "<<dectohex(i.second)<<"} ";
 	}
 	cout<<endl;
-
 	return 0;
 }
