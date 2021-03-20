@@ -236,8 +236,8 @@ int main(int argc, char const* argv[])
 				if (clw % 4 != 0) throw_error(counter);
 				row_buffer[clw] = registers[line_inst[1]];
 				row_number = rw;
-				row_access_delay = 2;
-				column_access_delay = 4;
+				row_access_delay = 2*10;
+				column_access_delay = 2;
 				cycles_clock += row_access_delay + column_access_delay;
 			}
 			else if (row_number == rw){
@@ -245,7 +245,7 @@ int main(int argc, char const* argv[])
 				if (clw % 4 != 0) throw_error(counter);
 				row_buffer[clw] = registers[line_inst[1]];
 				row_access_delay = 0;
-				column_access_delay = 4;
+				column_access_delay = 2;
 				cycles_clock += row_access_delay + column_access_delay;
 			}
 			else{
@@ -254,8 +254,8 @@ int main(int argc, char const* argv[])
 				if (clw % 4 != 0) throw_error(counter);
 				row_buffer[clw] = registers[line_inst[1]];
 				row_number = rw;
-				row_access_delay = 1;
-				column_access_delay = 4;
+				row_access_delay = 10;
+				column_access_delay = 2;
 				cycles_clock += row_access_delay + column_access_delay;
 			}
 			cycles_clock++;
@@ -282,7 +282,28 @@ int main(int argc, char const* argv[])
 			}
 			if ((registers.find(base_address) == registers.end())) throw_error(counter);
 			int base_value = registers[base_address];
-			registers[line_inst[1]] = memory[base_value + stoi(offset_address)];
+			//registers[line_inst[1]] = memory[base_value + stoi(offset_address)];
+			int rw, clw;
+			rw = static_cast<int>(floor((base_value + stoi(offset_address)) / 1024));
+			if(rw == row_number){
+				clw = (base_value + stoi(offset_address)) % 1024;
+				if (clw % 4 != 0) throw_error(counter);
+				registers[line_inst[1]] = row_buffer[clw];
+				row_access_delay = 0;
+				column_access_delay = 2;
+				cycles_clock += row_access_delay + column_access_delay;
+			}
+			else{
+				dram_memory[row_number] = row_buffer;
+				row_buffer = dram_memory[rw];
+				clw = (base_value + stoi(offset_address)) % 1024;
+				if (clw % 4 != 0) throw_error(counter);
+				registers[line_inst[1]] = row_buffer[clw];
+				row_access_delay = 2*10;
+				column_access_delay = 2;
+				cycles_clock += row_access_delay + column_access_delay;
+				row_number = rw;
+			}
 			cycles_clock++;
 			print_reg(cycles_clock);
 		}
@@ -294,11 +315,20 @@ int main(int argc, char const* argv[])
 		}
 		counter++;
 	}
+	dram_memory[row_number] = row_buffer;
 	cout << "Number of Clock Cycles: " << cycles_clock << endl;
 	for (auto i : instr_num)
 	{
 		cout << "{" << i.first << ": " << dectohex(i.second) << "} ";
 	}
 	cout << endl;
+
+	for (int i = 0; i < dram_memory.size(); i++) {
+		for (int j = 0; j < dram_memory[0].size(); j++) {
+			if (dram_memory[i][j]!=0){
+				cout << 1024*i + j << ", " << dram_memory[i][j] << endl;
+			}
+		}
+	}
 	return 0;
 }
