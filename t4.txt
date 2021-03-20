@@ -1,0 +1,2 @@
+lw $v0, 2
+addi $t2, $zero, 67

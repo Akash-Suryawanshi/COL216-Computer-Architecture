@@ -1,0 +1,4 @@
+addi $t0, $zero, 12
+addi $t1, $zero, 15
+bne $t0, $t1, jump
+jump:

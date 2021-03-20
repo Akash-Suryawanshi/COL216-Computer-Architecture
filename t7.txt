@@ -1,0 +1,7 @@
+addi $a1, $zero, 17
+addi $a0, $zero, 1
+j jump
+addi $t3, $zero, 8
+jump:
+	addi $t4, $zero, 6
+	addi $v2, $zero, 9

@@ -1,0 +1,18 @@
+	addi	$a0, $a0, 1
+	addi	$a1, $a1, 2
+	addi	$a2, $a2, 3
+	addi	$a3, $a3, 4
+	addi 	$s0, $s0, 5
+	jal 	leaf_example
+	j 		done
+leaf_example:
+	addi 	$sp, $sp, -4
+	sw 		$s0, 0($sp)
+	add 	$t0, $a0, $a1
+	add 	$t1, $a2, $a3
+	add 	$s0, $t0, $t1
+	add 	$v0, $s0, $zero
+	lw 		$s0, 0($sp)
+	addi 	$sp, $sp, 4
+	jr 		$ra
+done:

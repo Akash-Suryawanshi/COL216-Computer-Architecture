@@ -1,0 +1,6 @@
+addi $t0, $zero, 23
+addi $t3, $zero, 45
+beq  $t0, $t1, label
+addi $t8, $zero, 56
+label:
+	addi $t9, $zero, 44
