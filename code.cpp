@@ -1,4 +1,9 @@
-#include <bits/stdc++.h>
+//#include <bits/stdc++.h>
+#include <sstream>
+#include <vector>
+#include <map>
+#include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -6,7 +11,7 @@ using namespace std;
 map<string, int> registers = {{"$zero",0}, {"$at",0}, {"$v0",0}, {"$v1",0}, {"$a0",0}, {"$a1",0}, {"$a2",0}, {"$a3",0}, {"$t0",0}, {"$t1",0}, {"$t2",0}, {"$t3",0}, {"$t4",0}, {"$t5",0}, {"$t6",0}, {"$t7",0}, {"$s0",0}, {"$s1",0}, {"$s2",0}, {"$s3",0}, {"$s4",0}, {"$s5",0}, {"$s6",0}, {"$s7",0}, {"$t8",0}, {"$t9",0}, {"$k0",0}, {"$k1",0}, {"$gp",0}, {"$sp",0}, {"$fp",0}, {"$ra",0}};
 //For storing number of times given instruction has been executed. 
 map<string, int> instr_num = {{"add",0}, {"sub",0}, {"mul",0}, {"beq",0}, {"bne",0}, {"slt",0}, {"j",0}, {"lw",0}, {"sw",0}, {"addi",0}};
-vector<vector<string> > instructions; // For stroing instructions
+vector<vector<string> > instructions; // For storing instructions
 vector<string> line_inst;
 map<string, int> jump_check; //For storing the instruction number in case of jump
 int total_inst=0, counter=0, inst_count=0, cycles_clock=0;
