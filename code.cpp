@@ -163,6 +163,10 @@ int main(int argc, char const* argv[])
 				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2] && register_in_buffer != line_inst[3]) {
 					decrement_time();
 				}
+				else
+				{
+					buffer_in_use = false;
+				}
 			}
 			registers[line_inst[1]] = registers[line_inst[2]] + registers[line_inst[3]];
 			
@@ -184,7 +188,6 @@ int main(int argc, char const* argv[])
 			}
 			if (reg1 < reg2) registers[line_inst[1]] = 1;
 			else registers[line_inst[1]] = 0;
-			
 			cycles_clock++;
 			print_reg(cycles_clock);
 		}
@@ -198,6 +201,10 @@ int main(int argc, char const* argv[])
 			if (buffer_in_use) {
 				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2]) {
 					decrement_time();
+				}
+				else
+				{
+					buffer_in_use = false;
 				}
 			}
 			int reg1 = registers[line_inst[2]], reg2 = stoi(line_inst[3]);
@@ -226,6 +233,10 @@ int main(int argc, char const* argv[])
 				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2]) {
 					decrement_time();
 				}
+				else
+				{
+					buffer_in_use = false;
+				}
 			}
 			int reg1 = registers[line_inst[1]], reg2 = registers[line_inst[2]];
 			if (jump_check.find(line_inst[3]) == jump_check.end()) throw_error(counter);
@@ -246,6 +257,10 @@ int main(int argc, char const* argv[])
 			if (buffer_in_use) {
 				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2]) {
 					decrement_time();
+				}
+				else
+				{
+					buffer_in_use = false;
 				}
 			}
 			int reg1 = registers[line_inst[1]], reg2 = registers[line_inst[2]];
