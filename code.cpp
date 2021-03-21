@@ -89,7 +89,6 @@ int main(int argc, char const* argv[])
 	ifstream myfile(argv[1]);
 	row_access_delay = strtol(argv[2], nullptr, 0);
 	column_access_delay = strtol(argv[3], nullptr, 0);
-	cout << row_access_delay << ", " << column_access_delay << endl;
 
 	//Reading the file
 	while (getline(myfile, mytext))
@@ -292,6 +291,8 @@ int main(int argc, char const* argv[])
 		}
 		else if (line_inst[0] == "sw")
 		{
+			cycles_clock++;
+			cout << cycles_clock << ": " << "DRAM request issued" << endl << endl;
 			if ((line_inst.size() != 3) || (registers.find(line_inst[1]) == registers.end())) throw_error(counter);
 			instr_num[line_inst[0]]++;
 			string base_address = "", offset_address = "", mem = line_inst[2];
@@ -345,13 +346,14 @@ int main(int argc, char const* argv[])
 				buffer_in_use = true;
 				cycles_clock += wait_time;
 			}
-			cycles_clock++;
 			print_reg(cycles_clock);
-			cout << "memory location: " << rw*1024 + clw << "-" << rw*1024 + clw + 3 << ", value = " << registers[line_inst[1]] << endl;
+			cout << "memory location: " << rw * 1024 + clw << "-" << rw * 1024 + clw + 3 << ", value = " << registers[line_inst[1]] << endl;
 			executed_ins("sw");
 		}
 		else if (line_inst[0] == "lw")
 		{
+			cycles_clock++;
+			cout << cycles_clock << ": " << "DRAM request issued" << endl << endl;
 			if ((line_inst.size() != 3) || (registers.find(line_inst[1]) == registers.end())) throw_error(counter);
 			instr_num[line_inst[0]]++;
 			string base_address = "", offset_address = "", mem = line_inst[2];
@@ -394,7 +396,6 @@ int main(int argc, char const* argv[])
 				cycles_clock += wait_time;
 				row_number = rw;
 			}
-			cycles_clock++;
 			print_reg(cycles_clock);
 			modified_register(line_inst[1], registers[line_inst[1]]);
 			executed_ins("lw");
