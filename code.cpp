@@ -55,13 +55,14 @@ void throw_error(int counter)
 
 void decrement_time()
 {
-	
-		wait_time -= 1;
+	cout << cycles_clock << ", " <<buffer_in_use << endl;
+		wait_time = wait_time - 1;
 		if (wait_time == 0)
 		{
 			buffer_in_use = false;
 		}
-		counter--;
+		cycles_clock--;
+		
 	
 }
 
@@ -341,6 +342,7 @@ int main(int argc, char const* argv[])
 			//registers[line_inst[1]] = memory[base_value + stoi(offset_address)];
 			int rw, clw;
 			rw = static_cast<int>(floor((base_value + stoi(offset_address)) / 1024));
+			register_in_buffer = line_inst[1];
 			if(rw == row_number){
 				clw = (base_value + stoi(offset_address)) % 1024;
 				if (clw % 4 != 0) throw_error(counter);
@@ -370,6 +372,7 @@ int main(int argc, char const* argv[])
 			exit(0);
 		}
 		counter++;
+		cout << cycles_clock << ", " << buffer_in_use << ", " << wait_time << endl;
 	}
 	dram_memory[row_number] = row_buffer;
 	cout << "Number of Clock Cycles: " << cycles_clock << endl;
