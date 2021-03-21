@@ -30,6 +30,7 @@ int column_access_delay;
 string register_in_buffer;
 int wait_time;
 bool buffer_in_use = false;
+int number_of_buffer_updates = 0;
 
 //Integer is 2^5 bits, total memory available is 2^23 bits 
 //so total size of array to be created for memory is 2^18=262144.
@@ -283,6 +284,7 @@ int main(int argc, char const* argv[])
 				wait_time = 2*row_access_delay + column_access_delay;
 				buffer_in_use = true;
 				cycles_clock += wait_time;
+				number_of_buffer_updates += 2;
 			}
 			else if (row_number == rw){
 				clw = (base_value + stoi(offset_address)) % 1024;
@@ -301,6 +303,7 @@ int main(int argc, char const* argv[])
 				wait_time = row_access_delay + column_access_delay;
 				buffer_in_use = true;
 				cycles_clock += wait_time;
+				number_of_buffer_updates += 1;
 			}
 			print_reg(cycles_clock);
 			cout << "memory location: " << rw * 1024 + clw << "-" << rw * 1024 + clw + 3 << ", value = " << registers[line_inst[1]] << endl;
@@ -341,6 +344,17 @@ int main(int argc, char const* argv[])
 				buffer_in_use = true;
 				cycles_clock += wait_time;
 			}
+			else if (row_number == -1) {
+				row_buffer = dram_memory[rw];
+				clw = (base_value + stoi(offset_address)) % 1024;
+				if (clw % 4 != 0) throw_error(counter);
+				registers[line_inst[1]] = row_buffer[clw];
+				wait_time = 2 * row_access_delay + column_access_delay;
+				buffer_in_use = true;
+				cycles_clock += wait_time;
+				row_number = rw;
+				number_of_buffer_updates += 1;
+			}
 			else{
 				dram_memory[row_number] = row_buffer;
 				row_buffer = dram_memory[rw];
@@ -351,6 +365,7 @@ int main(int argc, char const* argv[])
 				buffer_in_use = true;
 				cycles_clock += wait_time;
 				row_number = rw;
+				number_of_buffer_updates += 2;
 			}
 			print_reg(cycles_clock);
 			modified_register(line_inst[1], registers[line_inst[1]]);
@@ -379,5 +394,7 @@ int main(int argc, char const* argv[])
 			}
 		}
 	}
+	cout << "Number of row buffer updates: " << number_of_buffer_updates << endl;
+
 	return 0;
 }
