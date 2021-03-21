@@ -8,12 +8,9 @@ main:
 	
 	lw $t2, 0($s0)
 	lw $t3, 0($s1)
-	
 	add $t3, $t3, $t2
 	addi $s2, $zero, 1028
 	
 	sw $t3, 0($s2)
 	
-	
-
 exit:
