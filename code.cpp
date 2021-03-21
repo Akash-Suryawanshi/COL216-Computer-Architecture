@@ -53,6 +53,18 @@ void throw_error(int counter)
 	exit(0);
 }
 
+void decrement_time()
+{
+	
+		wait_time -= 1;
+		if (wait_time == 0)
+		{
+			buffer_in_use = false;
+		}
+		counter--;
+	
+}
+
 //Function for printing the value of map of registers
 void print_reg(int cycles_clock)
 {
@@ -117,8 +129,8 @@ int main(int argc, char const* argv[])
 			instr_num[line_inst[0]]++;
 			registers[line_inst[1]] = registers[line_inst[2]] - registers[line_inst[3]];
 			if (buffer_in_use) {
-				if (register_in_buffer == line_inst[1] || register_in_buffer == line_inst[2] || register_in_buffer == line_inst[3]){
-					
+				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2] && register_in_buffer != line_inst[3]){
+					decrement_time();
 				}
 			}
 			cycles_clock++;
@@ -132,6 +144,11 @@ int main(int argc, char const* argv[])
 				throw_error(counter);
 			instr_num[line_inst[0]]++;
 			registers[line_inst[1]] = registers[line_inst[2]] * registers[line_inst[3]];
+			if (buffer_in_use) {
+				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2] && register_in_buffer != line_inst[3]) {
+					decrement_time();
+				}
+			}
 			cycles_clock++;
 			print_reg(cycles_clock);
 		}
@@ -143,6 +160,11 @@ int main(int argc, char const* argv[])
 				throw_error(counter);
 			instr_num[line_inst[0]]++;
 			registers[line_inst[1]] = registers[line_inst[2]] + registers[line_inst[3]];
+			if (buffer_in_use) {
+				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2] && register_in_buffer != line_inst[3]) {
+					decrement_time();
+				}
+			}
 			cycles_clock++;
 			print_reg(cycles_clock);
 		}
@@ -156,6 +178,11 @@ int main(int argc, char const* argv[])
 			int reg1 = registers[line_inst[2]], reg2 = registers[line_inst[3]];
 			if (reg1 < reg2) registers[line_inst[1]] = 1;
 			else registers[line_inst[1]] = 0;
+			if (buffer_in_use) {
+				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2] && register_in_buffer != line_inst[3]) {
+					decrement_time();
+				}
+			}
 			cycles_clock++;
 			print_reg(cycles_clock);
 		}
@@ -169,6 +196,11 @@ int main(int argc, char const* argv[])
 			int reg1 = registers[line_inst[2]], reg2 = stoi(line_inst[3]);
 			if (line_inst[2] == "$sp") registers[line_inst[1]] = reg1 + reg2 / 4;
 			else registers[line_inst[1]] = reg1 + reg2;
+			if (buffer_in_use) {
+				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2] ) {
+					decrement_time();
+				}
+			}
 			cycles_clock++;
 			print_reg(cycles_clock);
 		}
@@ -193,6 +225,11 @@ int main(int argc, char const* argv[])
 			{
 				counter = jump_check[line_inst[3]];
 			}
+			if (buffer_in_use) {
+				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2]) {
+					decrement_time();
+				}
+			}
 			cycles_clock++;
 			print_reg(cycles_clock);
 		}
@@ -207,6 +244,11 @@ int main(int argc, char const* argv[])
 			if (reg1 == reg2)
 			{
 				counter = jump_check[line_inst[3]];
+			}
+			if (buffer_in_use) {
+				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2]) {
+					decrement_time();
+				}
 			}
 			cycles_clock++;
 			print_reg(cycles_clock);
