@@ -380,7 +380,7 @@ int main(int argc, char const* argv[])
 		counter++;
 	}
 	dram_memory[row_number] = row_buffer;
-	cout << "Number of Clock Cycles: " << cycles_clock << endl;
+	cout << "Number of Clock Cycles: " << cycles_clock << " + "<< row_access_delay << " (row access delay)" << endl;
 	for (auto i : instr_num)
 	{
 		cout << "{" << i.first << ": " << dectohex(i.second) << "} ";
