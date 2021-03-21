@@ -347,6 +347,7 @@ int main(int argc, char const* argv[])
 			}
 			cycles_clock++;
 			print_reg(cycles_clock);
+			cout << "memory location: " << rw*1024 + clw << "-" << rw*1024 + clw + 3 << ", value = " << registers[line_inst[1]] << endl;
 			executed_ins("sw");
 		}
 		else if (line_inst[0] == "lw")
