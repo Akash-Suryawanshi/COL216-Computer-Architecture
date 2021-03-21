@@ -153,6 +153,7 @@ int main(int argc, char const* argv[])
 		}
 		else if (line_inst[0] == "add")
 		{
+			cout << "before: " << cycles_clock << endl;
 			if ((line_inst.size() != 4) || (registers.find(line_inst[1]) == registers.end())
 				|| (registers.find(line_inst[2]) == registers.end()) || (registers.find(line_inst[3]) == registers.end()
 				))
@@ -313,11 +314,13 @@ int main(int argc, char const* argv[])
 				buffer_in_use = true;
 				cycles_clock += wait_time;
 			}
+			cout << "wait_time " << wait_time << endl;
 			cycles_clock++;
 			print_reg(cycles_clock);
 		}
 		else if (line_inst[0] == "lw")
 		{
+			register_in_buffer = line_inst[1];
 			if ((line_inst.size() != 3) || (registers.find(line_inst[1]) == registers.end())) throw_error(counter);
 			instr_num[line_inst[0]]++;
 			string base_address = "", offset_address = "", mem = line_inst[2];
@@ -340,7 +343,6 @@ int main(int argc, char const* argv[])
 			//registers[line_inst[1]] = memory[base_value + stoi(offset_address)];
 			int rw, clw;
 			rw = static_cast<int>(floor((base_value + stoi(offset_address)) / 1024));
-			register_in_buffer = line_inst[1];
 			if(rw == row_number){
 				clw = (base_value + stoi(offset_address)) % 1024;
 				if (clw % 4 != 0) throw_error(counter);
