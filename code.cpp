@@ -314,6 +314,7 @@ int main(int argc, char const* argv[])
 			exit(0);
 		}
 		counter++;
+		cout << cycles_clock << ", " << endl;
 	}
 	dram_memory[row_number] = row_buffer;
 	cout << "Number of Clock Cycles: " << cycles_clock << endl;
