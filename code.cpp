@@ -55,7 +55,6 @@ void throw_error(int counter)
 
 void decrement_time()
 {
-	cout << cycles_clock << ", " <<buffer_in_use << endl;
 		wait_time = wait_time - 1;
 		if (wait_time == 0)
 		{
@@ -126,12 +125,13 @@ int main(int argc, char const* argv[])
 				))
 				throw_error(counter);
 			instr_num[line_inst[0]]++;
-			registers[line_inst[1]] = registers[line_inst[2]] - registers[line_inst[3]];
 			if (buffer_in_use) {
-				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2] && register_in_buffer != line_inst[3]){
+				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2] && register_in_buffer != line_inst[3]) {
 					decrement_time();
 				}
 			}
+			registers[line_inst[1]] = registers[line_inst[2]] - registers[line_inst[3]];
+			
 			cycles_clock++;
 			print_reg(cycles_clock);
 		}
@@ -142,29 +142,30 @@ int main(int argc, char const* argv[])
 				))
 				throw_error(counter);
 			instr_num[line_inst[0]]++;
-			registers[line_inst[1]] = registers[line_inst[2]] * registers[line_inst[3]];
 			if (buffer_in_use) {
 				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2] && register_in_buffer != line_inst[3]) {
 					decrement_time();
 				}
 			}
+			registers[line_inst[1]] = registers[line_inst[2]] * registers[line_inst[3]];
+			
 			cycles_clock++;
 			print_reg(cycles_clock);
 		}
 		else if (line_inst[0] == "add")
 		{
-			cout << "before: " << cycles_clock << endl;
 			if ((line_inst.size() != 4) || (registers.find(line_inst[1]) == registers.end())
 				|| (registers.find(line_inst[2]) == registers.end()) || (registers.find(line_inst[3]) == registers.end()
 				))
 				throw_error(counter);
 			instr_num[line_inst[0]]++;
-			registers[line_inst[1]] = registers[line_inst[2]] + registers[line_inst[3]];
 			if (buffer_in_use) {
 				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2] && register_in_buffer != line_inst[3]) {
 					decrement_time();
 				}
 			}
+			registers[line_inst[1]] = registers[line_inst[2]] + registers[line_inst[3]];
+			
 			cycles_clock++;
 			print_reg(cycles_clock);
 		}
@@ -176,13 +177,14 @@ int main(int argc, char const* argv[])
 				throw_error(counter);
 			instr_num[line_inst[0]]++;
 			int reg1 = registers[line_inst[2]], reg2 = registers[line_inst[3]];
-			if (reg1 < reg2) registers[line_inst[1]] = 1;
-			else registers[line_inst[1]] = 0;
 			if (buffer_in_use) {
 				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2] && register_in_buffer != line_inst[3]) {
 					decrement_time();
 				}
 			}
+			if (reg1 < reg2) registers[line_inst[1]] = 1;
+			else registers[line_inst[1]] = 0;
+			
 			cycles_clock++;
 			print_reg(cycles_clock);
 		}
@@ -193,14 +195,15 @@ int main(int argc, char const* argv[])
 				throw_error(counter);
 			if (line_inst.size() != 4) throw_error(counter);
 			instr_num[line_inst[0]]++;
-			int reg1 = registers[line_inst[2]], reg2 = stoi(line_inst[3]);
-			if (line_inst[2] == "$sp") registers[line_inst[1]] = reg1 + reg2 / 4;
-			else registers[line_inst[1]] = reg1 + reg2;
 			if (buffer_in_use) {
-				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2] ) {
+				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2]) {
 					decrement_time();
 				}
 			}
+			int reg1 = registers[line_inst[2]], reg2 = stoi(line_inst[3]);
+			if (line_inst[2] == "$sp") registers[line_inst[1]] = reg1 + reg2 / 4;
+			else registers[line_inst[1]] = reg1 + reg2;
+			
 			cycles_clock++;
 			print_reg(cycles_clock);
 		}
@@ -219,17 +222,18 @@ int main(int argc, char const* argv[])
 				|| (registers.find(line_inst[2]) == registers.end()))
 				throw_error(counter);
 			instr_num[line_inst[0]]++;
+			if (buffer_in_use) {
+				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2]) {
+					decrement_time();
+				}
+			}
 			int reg1 = registers[line_inst[1]], reg2 = registers[line_inst[2]];
 			if (jump_check.find(line_inst[3]) == jump_check.end()) throw_error(counter);
 			if (reg1 != reg2)
 			{
 				counter = jump_check[line_inst[3]];
 			}
-			if (buffer_in_use) {
-				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2]) {
-					decrement_time();
-				}
-			}
+			
 			cycles_clock++;
 			print_reg(cycles_clock);
 		}
@@ -239,17 +243,18 @@ int main(int argc, char const* argv[])
 				|| (registers.find(line_inst[2]) == registers.end()))
 				throw_error(counter);
 			instr_num[line_inst[0]]++;
+			if (buffer_in_use) {
+				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2]) {
+					decrement_time();
+				}
+			}
 			int reg1 = registers[line_inst[1]], reg2 = registers[line_inst[2]];
 			if (jump_check.find(line_inst[3]) == jump_check.end()) throw_error(counter);
 			if (reg1 == reg2)
 			{
 				counter = jump_check[line_inst[3]];
 			}
-			if (buffer_in_use) {
-				if (register_in_buffer != line_inst[1] && register_in_buffer != line_inst[2]) {
-					decrement_time();
-				}
-			}
+			
 			cycles_clock++;
 			print_reg(cycles_clock);
 		}
@@ -314,13 +319,11 @@ int main(int argc, char const* argv[])
 				buffer_in_use = true;
 				cycles_clock += wait_time;
 			}
-			cout << "wait_time " << wait_time << endl;
 			cycles_clock++;
 			print_reg(cycles_clock);
 		}
 		else if (line_inst[0] == "lw")
 		{
-			register_in_buffer = line_inst[1];
 			if ((line_inst.size() != 3) || (registers.find(line_inst[1]) == registers.end())) throw_error(counter);
 			instr_num[line_inst[0]]++;
 			string base_address = "", offset_address = "", mem = line_inst[2];
@@ -339,6 +342,7 @@ int main(int argc, char const* argv[])
 				}
 			}
 			if ((registers.find(base_address) == registers.end())) throw_error(counter);
+			register_in_buffer = line_inst[1];
 			int base_value = registers[base_address];
 			//registers[line_inst[1]] = memory[base_value + stoi(offset_address)];
 			int rw, clw;
