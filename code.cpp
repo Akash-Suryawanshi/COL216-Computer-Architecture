@@ -27,6 +27,9 @@ int total_inst = 0, counter = 0, inst_count = 0, cycles_clock = 0;
 int row_number = -1;
 int row_access_delay;
 int column_access_delay;
+string register_in_buffer;
+int wait_time;
+bool buffer_in_use = false;
 
 //Integer is 2^5 bits, total memory available is 2^23 bits 
 //so total size of array to be created for memory is 2^18=262144.
@@ -113,6 +116,11 @@ int main(int argc, char const* argv[])
 				throw_error(counter);
 			instr_num[line_inst[0]]++;
 			registers[line_inst[1]] = registers[line_inst[2]] - registers[line_inst[3]];
+			if (buffer_in_use) {
+				if (register_in_buffer == line_inst[1] || register_in_buffer == line_inst[2] || register_in_buffer == line_inst[3]){
+					
+				}
+			}
 			cycles_clock++;
 			print_reg(cycles_clock);
 		}
@@ -227,7 +235,7 @@ int main(int argc, char const* argv[])
 			memory[base_value + stoi(offset_address) / 4] = registers[line_inst[1]];
 			int rw, clw;
 			rw = static_cast<int>(floor((base_value + stoi(offset_address)) / 1024));
-
+			register_in_buffer = line_inst[1];
 			if(row_number!= rw && row_number != -1){
 				//copy to dram and then copy another row and change
 				dram_memory[row_number] = row_buffer;
@@ -238,7 +246,9 @@ int main(int argc, char const* argv[])
 				row_number = rw;
 				row_access_delay = 2*10;
 				column_access_delay = 2;
-				cycles_clock += row_access_delay + column_access_delay;
+				wait_time = row_access_delay + column_access_delay;
+				buffer_in_use = true;
+				cycles_clock += wait_time;
 			}
 			else if (row_number == rw){
 				clw = (base_value + stoi(offset_address)) % 1024;
@@ -246,7 +256,9 @@ int main(int argc, char const* argv[])
 				row_buffer[clw] = registers[line_inst[1]];
 				row_access_delay = 0;
 				column_access_delay = 2;
-				cycles_clock += row_access_delay + column_access_delay;
+				wait_time = row_access_delay + column_access_delay;
+				buffer_in_use = true;
+				cycles_clock += wait_time;
 			}
 			else{
 				row_buffer = dram_memory[rw];
@@ -256,7 +268,9 @@ int main(int argc, char const* argv[])
 				row_number = rw;
 				row_access_delay = 10;
 				column_access_delay = 2;
-				cycles_clock += row_access_delay + column_access_delay;
+				wait_time = row_access_delay + column_access_delay;
+				buffer_in_use = true;
+				cycles_clock += wait_time;
 			}
 			cycles_clock++;
 			print_reg(cycles_clock);
