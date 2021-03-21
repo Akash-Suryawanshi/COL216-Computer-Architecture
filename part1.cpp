@@ -349,7 +349,7 @@ int main(int argc, char const* argv[])
 				clw = (base_value + stoi(offset_address)) % 1024;
 				if (clw % 4 != 0) throw_error(counter);
 				registers[line_inst[1]] = row_buffer[clw];
-				wait_time = 2 * row_access_delay + column_access_delay;
+				wait_time = row_access_delay + column_access_delay;
 				buffer_in_use = true;
 				cycles_clock += wait_time;
 				row_number = rw;
