@@ -63,6 +63,11 @@ void decrement_time()
 		cycles_clock--;
 }
 
+void executed_ins(string ins)
+{
+	cout << "executed instruction in cycle number "<< cycles_clock <<": " << ins << endl;
+	cout << "\n\n";
+}
 //Function for printing the value of map of registers
 void print_reg(int cycles_clock)
 {
@@ -71,13 +76,20 @@ void print_reg(int cycles_clock)
 	{
 		cout << "{" << i.first << ": " << dectohex(i.second) << "} ";
 	}
-	cout << "\n\n";
+	cout << endl;
+}
+
+void modified_register(string reg, int new_val) {
+	cout << "modified register: " << reg << ", " << "new value: " << new_val << endl;
 }
 
 int main(int argc, char const* argv[])
 {
 	string mytext;
 	ifstream myfile(argv[1]);
+	row_access_delay = strtol(argv[2], nullptr, 0);
+	column_access_delay = strtol(argv[3], nullptr, 0);
+	cout << row_access_delay << ", " << column_access_delay << endl;
 
 	//Reading the file
 	while (getline(myfile, mytext))
@@ -131,9 +143,10 @@ int main(int argc, char const* argv[])
 				}
 			}
 			registers[line_inst[1]] = registers[line_inst[2]] - registers[line_inst[3]];
-			
 			cycles_clock++;
 			print_reg(cycles_clock);
+			modified_register(line_inst[1], registers[line_inst[1]]);
+			executed_ins("sub");
 		}
 		else if (line_inst[0] == "mul")
 		{
@@ -148,9 +161,10 @@ int main(int argc, char const* argv[])
 				}
 			}
 			registers[line_inst[1]] = registers[line_inst[2]] * registers[line_inst[3]];
-			
 			cycles_clock++;
 			print_reg(cycles_clock);
+			modified_register(line_inst[1], registers[line_inst[1]]);
+			executed_ins("mul");
 		}
 		else if (line_inst[0] == "add")
 		{
@@ -169,9 +183,10 @@ int main(int argc, char const* argv[])
 				}
 			}
 			registers[line_inst[1]] = registers[line_inst[2]] + registers[line_inst[3]];
-			
 			cycles_clock++;
 			print_reg(cycles_clock);
+			modified_register(line_inst[1], registers[line_inst[1]]);
+			executed_ins("add");
 		}
 		else if (line_inst[0] == "slt")
 		{
@@ -190,6 +205,7 @@ int main(int argc, char const* argv[])
 			else registers[line_inst[1]] = 0;
 			cycles_clock++;
 			print_reg(cycles_clock);
+			executed_ins("slt");
 		}
 		else if (line_inst[0] == "addi")
 		{
@@ -210,9 +226,10 @@ int main(int argc, char const* argv[])
 			int reg1 = registers[line_inst[2]], reg2 = stoi(line_inst[3]);
 			if (line_inst[2] == "$sp") registers[line_inst[1]] = reg1 + reg2 / 4;
 			else registers[line_inst[1]] = reg1 + reg2;
-			
 			cycles_clock++;
 			print_reg(cycles_clock);
+			modified_register(line_inst[1], registers[line_inst[1]]);
+			executed_ins("addi");
 		}
 		else if (line_inst[0] == "j")
 		{
@@ -244,9 +261,9 @@ int main(int argc, char const* argv[])
 			{
 				counter = jump_check[line_inst[3]];
 			}
-			
 			cycles_clock++;
 			print_reg(cycles_clock);
+			executed_ins("j");
 		}
 		else if (line_inst[0] == "beq")
 		{
@@ -269,9 +286,9 @@ int main(int argc, char const* argv[])
 			{
 				counter = jump_check[line_inst[3]];
 			}
-			
 			cycles_clock++;
 			print_reg(cycles_clock);
+			executed_ins("beq");
 		}
 		else if (line_inst[0] == "sw")
 		{
@@ -306,9 +323,7 @@ int main(int argc, char const* argv[])
 				if (clw % 4 != 0) throw_error(counter);
 				row_buffer[clw] = registers[line_inst[1]];
 				row_number = rw;
-				row_access_delay = 2*10;
-				column_access_delay = 2;
-				wait_time = row_access_delay + column_access_delay;
+				wait_time = 2*row_access_delay + column_access_delay;
 				buffer_in_use = true;
 				cycles_clock += wait_time;
 			}
@@ -316,9 +331,7 @@ int main(int argc, char const* argv[])
 				clw = (base_value + stoi(offset_address)) % 1024;
 				if (clw % 4 != 0) throw_error(counter);
 				row_buffer[clw] = registers[line_inst[1]];
-				row_access_delay = 0;
-				column_access_delay = 2;
-				wait_time = row_access_delay + column_access_delay;
+				wait_time = 0*row_access_delay + column_access_delay;
 				buffer_in_use = true;
 				cycles_clock += wait_time;
 			}
@@ -328,14 +341,13 @@ int main(int argc, char const* argv[])
 				if (clw % 4 != 0) throw_error(counter);
 				row_buffer[clw] = registers[line_inst[1]];
 				row_number = rw;
-				row_access_delay = 10;
-				column_access_delay = 2;
 				wait_time = row_access_delay + column_access_delay;
 				buffer_in_use = true;
 				cycles_clock += wait_time;
 			}
 			cycles_clock++;
 			print_reg(cycles_clock);
+			executed_ins("sw");
 		}
 		else if (line_inst[0] == "lw")
 		{
@@ -366,9 +378,7 @@ int main(int argc, char const* argv[])
 				clw = (base_value + stoi(offset_address)) % 1024;
 				if (clw % 4 != 0) throw_error(counter);
 				registers[line_inst[1]] = row_buffer[clw];
-				row_access_delay = 0;
-				column_access_delay = 2;
-				wait_time = row_access_delay + column_access_delay;
+				wait_time = 0*row_access_delay + column_access_delay;
 				buffer_in_use = true;
 				cycles_clock += wait_time;
 			}
@@ -378,15 +388,15 @@ int main(int argc, char const* argv[])
 				clw = (base_value + stoi(offset_address)) % 1024;
 				if (clw % 4 != 0) throw_error(counter);
 				registers[line_inst[1]] = row_buffer[clw];
-				row_access_delay = 2*10;
-				column_access_delay = 2;
-				wait_time = row_access_delay + column_access_delay;
+				wait_time = 2*row_access_delay + column_access_delay;
 				buffer_in_use = true;
 				cycles_clock += wait_time;
 				row_number = rw;
 			}
 			cycles_clock++;
 			print_reg(cycles_clock);
+			modified_register(line_inst[1], registers[line_inst[1]]);
+			executed_ins("lw");
 		}
 		else if (line_inst.size() > 1)
 		{
@@ -395,7 +405,6 @@ int main(int argc, char const* argv[])
 			exit(0);
 		}
 		counter++;
-		cout << cycles_clock << ", " << buffer_in_use << ", " << wait_time << endl;
 	}
 	dram_memory[row_number] = row_buffer;
 	cout << "Number of Clock Cycles: " << cycles_clock << endl;
