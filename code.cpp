@@ -62,8 +62,6 @@ void decrement_time()
 			buffer_in_use = false;
 		}
 		cycles_clock--;
-		
-	
 }
 
 //Function for printing the value of map of registers
@@ -349,7 +347,9 @@ int main(int argc, char const* argv[])
 				registers[line_inst[1]] = row_buffer[clw];
 				row_access_delay = 0;
 				column_access_delay = 2;
-				cycles_clock += row_access_delay + column_access_delay;
+				wait_time = row_access_delay + column_access_delay;
+				buffer_in_use = true;
+				cycles_clock += wait_time;
 			}
 			else{
 				dram_memory[row_number] = row_buffer;
@@ -359,7 +359,9 @@ int main(int argc, char const* argv[])
 				registers[line_inst[1]] = row_buffer[clw];
 				row_access_delay = 2*10;
 				column_access_delay = 2;
-				cycles_clock += row_access_delay + column_access_delay;
+				wait_time = row_access_delay + column_access_delay;
+				buffer_in_use = true;
+				cycles_clock += wait_time;
 				row_number = rw;
 			}
 			cycles_clock++;
