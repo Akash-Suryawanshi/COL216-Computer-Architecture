@@ -19,7 +19,7 @@ map<string, int> instr_num = {
 };
 int n = (int)(pow(2.0, 10.0));
 vector<vector<string>> instructions; // For storing instructions
-vector<vector<int>> dram_memory(n,vector<int>(n, 0));
+vector<vector<int>> dram_memory(n, vector<int>(n, 0));
 vector<string> line_inst;
 map<string, int> jump_check; //For storing the instruction number in case of jump
 vector<int> row_buffer;
@@ -56,17 +56,17 @@ void throw_error(int counter)
 
 void decrement_time()
 {
-		wait_time = wait_time - 1;
-		if (wait_time == 0)
-		{
-			buffer_in_use = false;
-		}
-		cycles_clock--;
+	wait_time = wait_time - 1;
+	if (wait_time == 0)
+	{
+		buffer_in_use = false;
+	}
+	cycles_clock--;
 }
 
 void executed_ins(string ins)
 {
-	cout << "executed instruction in cycle number "<< cycles_clock <<": " << ins << endl;
+	cout << "executed instruction in cycle number " << cycles_clock << ": " << ins << endl;
 	cout << "\n\n";
 }
 //Function for printing the value of map of registers
@@ -134,7 +134,7 @@ int main(int argc, char const* argv[])
 		{
 			if ((line_inst.size() != 4) || (registers.find(line_inst[1]) == registers.end())
 				|| (registers.find(line_inst[2]) == registers.end()) || (registers.find(line_inst[3]) == registers.end()
-				))
+					))
 				throw_error(counter);
 			instr_num[line_inst[0]]++;
 			if (buffer_in_use) {
@@ -152,7 +152,7 @@ int main(int argc, char const* argv[])
 		{
 			if ((line_inst.size() != 4) || (registers.find(line_inst[1]) == registers.end())
 				|| (registers.find(line_inst[2]) == registers.end()) || (registers.find(line_inst[3]) == registers.end()
-				))
+					))
 				throw_error(counter);
 			instr_num[line_inst[0]]++;
 			if (buffer_in_use) {
@@ -170,7 +170,7 @@ int main(int argc, char const* argv[])
 		{
 			if ((line_inst.size() != 4) || (registers.find(line_inst[1]) == registers.end())
 				|| (registers.find(line_inst[2]) == registers.end()) || (registers.find(line_inst[3]) == registers.end()
-				))
+					))
 				throw_error(counter);
 			instr_num[line_inst[0]]++;
 			if (buffer_in_use) {
@@ -192,7 +192,7 @@ int main(int argc, char const* argv[])
 		{
 			if ((line_inst.size() != 4) || (registers.find(line_inst[1]) == registers.end())
 				|| (registers.find(line_inst[2]) == registers.end()) || (registers.find(line_inst[3]) == registers.end()
-				))
+					))
 				throw_error(counter);
 			instr_num[line_inst[0]]++;
 			int reg1 = registers[line_inst[2]], reg2 = registers[line_inst[3]];
@@ -317,7 +317,7 @@ int main(int argc, char const* argv[])
 			int rw, clw;
 			rw = static_cast<int>(floor((base_value + stoi(offset_address)) / 1024));
 			register_in_buffer = line_inst[1];
-			if(row_number!= rw && row_number != -1){
+			if (row_number != rw && row_number != -1) {
 				//copy to dram and then copy another row and change
 				dram_memory[row_number] = row_buffer;
 				row_buffer = dram_memory[rw];
@@ -325,20 +325,20 @@ int main(int argc, char const* argv[])
 				if (clw % 4 != 0) throw_error(counter);
 				row_buffer[clw] = registers[line_inst[1]];
 				row_number = rw;
-				wait_time = 2*row_access_delay + column_access_delay;
+				wait_time = 2 * row_access_delay + column_access_delay;
 				buffer_in_use = true;
 				cycles_clock += wait_time;
 				number_of_buffer_updates += 2;
 			}
-			else if (row_number == rw){
+			else if (row_number == rw) {
 				clw = (base_value + stoi(offset_address)) % 1024;
 				if (clw % 4 != 0) throw_error(counter);
 				row_buffer[clw] = registers[line_inst[1]];
-				wait_time = 0*row_access_delay + column_access_delay;
+				wait_time = 0 * row_access_delay + column_access_delay;
 				buffer_in_use = true;
 				cycles_clock += wait_time;
 			}
-			else{
+			else {
 				row_buffer = dram_memory[rw];
 				clw = (base_value + stoi(offset_address)) % 1024;
 				if (clw % 4 != 0) throw_error(counter);
@@ -380,11 +380,11 @@ int main(int argc, char const* argv[])
 			//registers[line_inst[1]] = memory[base_value + stoi(offset_address)];
 			int rw, clw;
 			rw = static_cast<int>(floor((base_value + stoi(offset_address)) / 1024));
-			if(rw == row_number){
+			if (rw == row_number) {
 				clw = (base_value + stoi(offset_address)) % 1024;
 				if (clw % 4 != 0) throw_error(counter);
 				registers[line_inst[1]] = row_buffer[clw];
-				wait_time = 0*row_access_delay + column_access_delay;
+				wait_time = 0 * row_access_delay + column_access_delay;
 				buffer_in_use = true;
 				cycles_clock += wait_time;
 			}
@@ -399,13 +399,13 @@ int main(int argc, char const* argv[])
 				row_number = rw;
 				number_of_buffer_updates += 1;
 			}
-			else{
+			else {
 				dram_memory[row_number] = row_buffer;
 				row_buffer = dram_memory[rw];
 				clw = (base_value + stoi(offset_address)) % 1024;
 				if (clw % 4 != 0) throw_error(counter);
 				registers[line_inst[1]] = row_buffer[clw];
-				wait_time = 2*row_access_delay + column_access_delay;
+				wait_time = 2 * row_access_delay + column_access_delay;
 				buffer_in_use = true;
 				cycles_clock += wait_time;
 				row_number = rw;
@@ -433,8 +433,8 @@ int main(int argc, char const* argv[])
 
 	for (int i = 0; i < dram_memory.size(); i++) {
 		for (int j = 0; j < dram_memory[0].size(); j++) {
-			if (dram_memory[i][j]!=0){
-				cout << 1024*i + j << ", " << dram_memory[i][j] << endl;
+			if (dram_memory[i][j] != 0) {
+				cout << 1024 * i + j << ", " << dram_memory[i][j] << endl;
 			}
 		}
 	}
